@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yemek - Тамақ жеткізу қызметі</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS Variables ===== */
+:root {
+--primary: #FF6B35;
+--primary-dark: #E85A2B;
+--primary-light: #FF8C5A;
+--secondary: #2D3436;
+--accent: #00B894;
+--danger: #E74C3C;
+--warning: #F39C12;
+--info: #3498DB;
+--bg: #F8F9FA;
+--bg-card: #FFFFFF;
+--bg-elevated: #FFFFFF;
+--text: #2D3436;
+--text-secondary: #636E72;
+--text-muted: #B2BEC3;
+--border: #E9ECEF;
+--shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+--shadow: 0 4px 20px rgba(0,0,0,0.1);
+--shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+--radius: 16px;
+--radius-sm: 8px;
+--radius-lg: 24px;
+--transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+--navbar-height: 72px;
+}
+[data-theme="dark"] {
+--bg: #1A1A2E;
+--bg-card: #16213E;
+--bg-elevated: #0F3460;
+--text: #EAEAEA;
+--text-secondary: #A0A0A0;
+--text-muted: #6B6B6B;
+--border: #2A2A4A;
+--shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+--shadow: 0 4px 20px rgba(0,0,0,0.4);
+--shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+background: var(--bg);
+color: var(--text);
+transition: var(--transition);
+overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+/* ===== Navbar ===== */
+#mainNavbar {
+background: rgba(255, 255, 255, 0.95);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+box-shadow: var(--shadow-sm);
+padding: 0.75rem 0;
+transition: var(--transition);
+z-index: 1000;
+}
+[data-theme="dark"] #mainNavbar { background: rgba(22, 33, 62, 0.95); }
+.navbar-brand {
+display: flex; align-items: center; gap: 10px;
+font-weight: 800; font-size: 1.5rem;
+color: var(--primary) !important;
+}
+.brand-icon { font-size: 1.75rem; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+.nav-link {
+font-weight: 500; color: var(--text-secondary) !important;
+padding: 0.5rem 1rem !important; border-radius: var(--radius-sm);
+transition: var(--transition); position: relative;
+}
+.nav-link:hover, .nav-link.active { color: var(--primary) !important; background: rgba(255, 107, 53, 0.1); }
+.nav-link.active::after {
+content: ''; position: absolute; bottom: 0; left: 50%;
+transform: translateX(-50%); width: 20px; height: 3px;
+background: var(--primary); border-radius: 2px;
+}
+.theme-toggle {
+width: 40px; height: 40px; border-radius: 50%;
+border: 2px solid var(--border); background: var(--bg-card);
+color: var(--text); display: flex; align-items: center; justify-content: center;
+cursor: pointer; transition: var(--transition);
+}
+.theme-toggle:hover { border-color: var(--primary); color: var(--primary); transform: rotate(180deg); }
+.language-switcher {
+display: flex; gap: 4px; background: var(--bg);
+padding: 3px; border-radius: 20px;
+}
+.lang-btn {
+border: none; background: transparent; padding: 6px 12px;
+border-radius: 16px; font-size: 0.75rem; font-weight: 600;
+color: var(--text-secondary); cursor: pointer; transition: var(--transition);
+}
+.lang-btn.active { background: var(--primary); color: white; }
+.cart-btn {
+position: relative; width: 44px; height: 44px; border-radius: 50%;
+border: 2px solid var(--border); background: var(--bg-card);
+color: var(--text); display: flex; align-items: center; justify-content: center;
+cursor: pointer; transition: var(--transition);
+}
+.cart-btn:hover { border-color: var(--primary); color: var(--primary); }
+.cart-count {
+position: absolute; top: -5px; right: -5px; background: var(--primary);
+color: white; font-size: 0.7rem; font-weight: 700;
+width: 20px; height: 20px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+animation: bounce 0.5s ease;
+}
+@keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+/* ===== Hero Section ===== */
+.hero-section {
+position: relative; min-height: 100vh;
+background: linear-gradient(135deg, #FFF5F0 0%, #FFE8E0 50%, #FFF0F5 100%);
+overflow: hidden;
+}
+[data-theme="dark"] .hero-section {
+background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+}
+.hero-overlay {
+position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FF6B35' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-content { padding-top: var(--navbar-height); position: relative; z-index: 2; }
+.hero-badge {
+display: inline-flex; align-items: center; gap: 8px;
+background: rgba(255, 107, 53, 0.15); color: var(--primary);
+padding: 8px 16px; border-radius: 50px;
+font-size: 0.875rem; font-weight: 600; margin-bottom: 1.5rem;
+}
+.hero-title {
+font-size: 3.5rem; font-weight: 800; line-height: 1.15;
+margin-bottom: 1.5rem; color: var(--text);
+}
+.text-highlight { color: var(--primary); position: relative; }
+.text-highlight::after {
+content: ''; position: absolute; bottom: 5px; left: 0; right: 0;
+height: 12px; background: rgba(255, 107, 53, 0.2); border-radius: 4px; z-index: -1;
+}
+.hero-subtitle { font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 500px; }
+.search-box { max-width: 500px; margin-bottom: 2.5rem; }
+.search-box .input-group {
+background: var(--bg-card); border-radius: var(--radius);
+box-shadow: var(--shadow); overflow: hidden; padding: 4px;
+}
+.search-box .input-group-text { background: transparent; border: none; color: var(--text-muted); padding-left: 1rem; }
+.search-box .form-control { border: none; background: transparent; padding: 0.75rem; font-size: 1rem; }
+.search-box .form-control:focus { box-shadow: none; }
+.search-box .btn { border-radius: var(--radius-sm); padding: 0.75rem 1.5rem; font-weight: 600; }
+.hero-stats { display: flex; gap: 2rem; }
+.stat-item { text-align: center; }
+.stat-number { display: block; font-size: 1.75rem; font-weight: 800; color: var(--primary); }
+.stat-label { font-size: 0.875rem; color: var(--text-secondary); }
+.hero-image { position: relative; height: 500px; display: flex; align-items: center; justify-content: center; }
+.floating-card {
+position: absolute; background: var(--bg-card); border-radius: var(--radius);
+box-shadow: var(--shadow-lg); overflow: hidden;
+animation: float 6s ease-in-out infinite; transition: var(--transition);
+}
+.floating-card:hover { transform: translateY(-10px) scale(1.05); }
+.floating-card img { width: 160px; height: 120px; object-fit: cover; }
+.floating-card .card-info { padding: 0.75rem; }
+.floating-card h5 { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.25rem; }
+.floating-card .price { color: var(--primary); font-weight: 700; }
+.card-1 { top: 10%; left: 10%; animation-delay: 0s; }
+.card-2 { top: 40%; right: 5%; animation-delay: -2s; }
+.card-3 { bottom: 15%; left: 20%; animation-delay: -4s; }
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+/* ===== Sections ===== */
+section { padding: 5rem 0; }
+.section-header { margin-bottom: 3rem; }
+.section-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.75rem; color: var(--text); }
+.section-subtitle { font-size: 1.125rem; color: var(--text-secondary); }
+/* ===== Categories ===== */
+.categories-section { background: var(--bg-card); }
+.categories-grid {
+display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1.5rem;
+}
+.category-card {
+background: var(--bg); border-radius: var(--radius); padding: 1.5rem 1rem;
+text-align: center; cursor: pointer; transition: var(--transition); border: 2px solid transparent;
+}
+.category-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: var(--shadow); }
+.category-card .category-icon {
+width: 60px; height: 60px; border-radius: 50%;
+background: rgba(255, 107, 53, 0.1); display: flex;
+align-items: center; justify-content: center;
+margin: 0 auto 0.75rem; font-size: 1.5rem; color: var(--primary); transition: var(--transition);
+}
+.category-card:hover .category-icon { background: var(--primary); color: white; transform: scale(1.1); }
+.category-card h5 { font-size: 0.9rem; font-weight: 600; margin: 0; }
+/* ===== Filter Tabs ===== */
+.filter-tabs { display: flex; gap: 0.75rem; justify-content: center; margin-bottom: 2.5rem; flex-wrap: wrap; }
+.filter-btn {
+padding: 0.6rem 1.5rem; border-radius: 50px; border: 2px solid var(--border);
+background: var(--bg-card); color: var(--text-secondary); font-weight: 500;
+cursor: pointer; transition: var(--transition);
+}
+.filter-btn:hover, .filter-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+/* ===== Menu Grid ===== */
+.menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+.menu-card {
+background: var(--bg-card); border-radius: var(--radius); overflow: hidden;
+box-shadow: var(--shadow-sm); transition: var(--transition); border: 1px solid var(--border);
+}
+.menu-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+.menu-card .card-img-wrapper { position: relative; overflow: hidden; height: 200px; }
+.menu-card .card-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+.menu-card:hover .card-img-wrapper img { transform: scale(1.1); }
+.menu-card .card-badge {
+position: absolute; top: 12px; left: 12px;
+background: var(--primary); color: white;
+padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+}
+.menu-card .card-badge.popular { background: var(--warning); }
+.menu-card .card-badge.new { background: var(--accent); }
+.menu-card .card-body { padding: 1.25rem; }
+.menu-card .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.menu-card .card-text {
+font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;
+display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.menu-card .card-footer {
+display: flex; justify-content: space-between; align-items: center;
+padding-top: 1rem; border-top: 1px solid var(--border);
+}
+.menu-card .price { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
+.menu-card .add-btn {
+width: 40px; height: 40px; border-radius: 50%; background: var(--primary);
+color: white; border: none; display: flex; align-items: center; justify-content: center;
+cursor: pointer; transition: var(--transition);
+}
+.menu-card .add-btn:hover { background: var(--primary-dark); transform: scale(1.1); }
+/* ===== Restaurants ===== */
+.restaurants-section { background: var(--bg); }
+.restaurants-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+.restaurant-card {
+background: var(--bg-card); border-radius: var(--radius); overflow: hidden;
+box-shadow: var(--shadow-sm); transition: var(--transition); border: 1px solid var(--border);
+}
+.restaurant-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+.restaurant-card .restaurant-img { height: 180px; position: relative; }
+.restaurant-card .restaurant-img img { width: 100%; height: 100%; object-fit: cover; }
+.restaurant-card .restaurant-rating {
+position: absolute; top: 12px; right: 12px;
+background: rgba(255, 255, 255, 0.95); padding: 4px 10px;
+border-radius: 20px; font-weight: 700; font-size: 0.875rem;
+display: flex; align-items: center; gap: 4px;
+}
+.restaurant-card .restaurant-rating i { color: var(--warning); }
+.restaurant-card .restaurant-info { padding: 1.25rem; }
+.restaurant-card h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+.restaurant-card .restaurant-meta { display: flex; gap: 1rem; color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.75rem; }
+.restaurant-card .restaurant-meta i { color: var(--primary); margin-right: 4px; }
+.restaurant-card .restaurant-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.restaurant-card .tag { background: rgba(255, 107, 53, 0.1); color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+/* ===== Features ===== */
+.features-section { background: var(--bg-card); }
+.feature-card { text-align: center; padding: 2.5rem 1.5rem; border-radius: var(--radius); background: var(--bg); transition: var(--transition); height: 100%; }
+.feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+.feature-icon {
+width: 80px; height: 80px; border-radius: 50%;
+background: rgba(255, 107, 53, 0.1); display: flex;
+align-items: center; justify-content: center;
+margin: 0 auto 1.5rem; font-size: 2rem; color: var(--primary); transition: var(--transition);
+}
+.feature-card:hover .feature-icon { background: var(--primary); color: white; transform: rotateY(360deg); }
+.feature-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.75rem; }
+.feature-card p { color: var(--text-secondary); font-size: 0.95rem; }
+/* ===== Footer ===== */
+.footer { background: var(--secondary); color: white; padding: 4rem 0 1.5rem; }
+.footer-brand { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 1rem; }
+.footer-desc { color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; line-height: 1.7; }
+.social-links { display: flex; gap: 1rem; }
+.social-links a {
+width: 44px; height: 44px; border-radius: 50%;
+background: rgba(255,255,255,0.1); display: flex;
+align-items: center; justify-content: center; color: white;
+transition: var(--transition); text-decoration: none;
+}
+.social-links a:hover { background: var(--primary); transform: translateY(-3px); }
+.footer h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; color: white; }
+.footer-links, .footer-contact { list-style: none; padding: 0; }
+.footer-links li, .footer-contact li { margin-bottom: 0.75rem; }
+.footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; transition: var(--transition); }
+.footer-links a:hover { color: var(--primary); padding-left: 5px; }
+.footer-contact li { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.7); }
+.footer-contact i { color: var(--primary); width: 20px; }
+.footer-bottom { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; color: rgba(255,255,255,0.5); }
+/* ===== Cart Sidebar ===== */
+.cart-sidebar {
+position: fixed; top: 0; right: -420px; width: 400px; max-width: 100%;
+height: 100vh; background: var(--bg-card); box-shadow: var(--shadow-lg);
+z-index: 1050; transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+display: flex; flex-direction: column;
+}
+.cart-sidebar.open { right: 0; }
+.cart-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.cart-header h4 { font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px; }
+.cart-close { background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; transition: var(--transition); }
+.cart-close:hover { color: var(--danger); transform: rotate(90deg); }
+.cart-body { flex: 1; overflow-y: auto; padding: 1rem; }
+.cart-empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+.cart-empty i { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+.cart-item { display: flex; gap: 1rem; padding: 1rem; background: var(--bg); border-radius: var(--radius-sm); margin-bottom: 0.75rem; transition: var(--transition); }
+.cart-item:hover { box-shadow: var(--shadow-sm); }
+.cart-item img { width: 70px; height: 70px; border-radius: var(--radius-sm); object-fit: cover; }
+.cart-item-info { flex: 1; }
+.cart-item-info h6 { font-weight: 600; margin-bottom: 0.25rem; font-size: 0.9rem; }
+.cart-item-info .price { color: var(--primary); font-weight: 700; }
+.cart-item-actions { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+.cart-item-actions button {
+width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border);
+background: var(--bg-card); display: flex; align-items: center; justify-content: center;
+cursor: pointer; transition: var(--transition); font-size: 0.8rem;
+}
+.cart-item-actions button:hover { background: var(--primary); color: white; border-color: var(--primary); }
+.cart-item-actions .quantity { font-weight: 600; min-width: 24px; text-align: center; }
+.cart-item-remove { color: var(--danger); cursor: pointer; transition: var(--transition); align-self: flex-start; }
+.cart-item-remove:hover { transform: scale(1.2); }
+.cart-footer { padding: 1.25rem; border-top: 1px solid var(--border); background: var(--bg); }
+.cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-size: 1.1rem; }
+.cart-total .total-price { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+.cart-overlay {
+position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+background: rgba(0,0,0,0.5); z-index: 1040;
+opacity: 0; visibility: hidden; transition: var(--transition);
+}
+.cart-overlay.open { opacity: 1; visibility: visible; }
+/* ===== Admin Panel ===== */
+.admin-panel { display: flex; min-height: 500px; }
+.admin-sidebar { width: 250px; background: var(--bg); border-right: 1px solid var(--border); padding: 1rem 0; }
+.admin-nav { display: flex; flex-direction: column; gap: 0.25rem; padding: 0 0.75rem; }
+.admin-nav-item {
+display: flex; align-items: center; gap: 10px; padding: 0.75rem 1rem;
+border-radius: var(--radius-sm); border: none; background: transparent;
+color: var(--text-secondary); font-weight: 500; cursor: pointer;
+transition: var(--transition); text-align: left; width: 100%;
+}
+.admin-nav-item:hover, .admin-nav-item.active { background: var(--primary); color: white; }
+.admin-nav-item i { width: 20px; text-align: center; }
+.admin-content { flex: 1; padding: 1.5rem; overflow-y: auto; max-height: 600px; }
+.admin-tab { display: none; }
+.admin-tab.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+.stat-card { background: var(--bg); border-radius: var(--radius); padding: 1.25rem; display: flex; align-items: center; gap: 1rem; transition: var(--transition); }
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+.stat-card i {
+width: 50px; height: 50px; border-radius: var(--radius-sm);
+background: rgba(255, 107, 53, 0.1); display: flex;
+align-items: center; justify-content: center; font-size: 1.25rem; color: var(--primary);
+}
+.stat-card .stat-value { display: block; font-size: 1.5rem; font-weight: 800; color: var(--text); }
+.stat-card .stat-label { font-size: 0.8rem; color: var(--text-secondary); }
+/* ===== Orders Tracking ===== */
+.order-card {
+background: var(--bg-card); border-radius: var(--radius);
+padding: 1.25rem; margin-bottom: 1rem;
+border: 1px solid var(--border); transition: var(--transition);
+}
+.order-card:hover { box-shadow: var(--shadow); }
+.order-card-header {
+display: flex; justify-content: space-between; align-items: center;
+margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+}
+.order-card-id { font-weight: 700; color: var(--primary); }
+.order-card-status {
+padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+}
+.status-new { background: rgba(52, 152, 219, 0.15); color: #3498DB; }
+.status-processing { background: rgba(243, 156, 18, 0.15); color: #F39C12; }
+.status-delivered { background: rgba(0, 184, 148, 0.15); color: #00B894; }
+.status-cancelled { background: rgba(231, 76, 60, 0.15); color: #E74C3C; }
+.order-card-items { margin-bottom: 0.75rem; }
+.order-card-item { display: flex; justify-content: space-between; padding: 0.25rem 0; font-size: 0.9rem; }
+.order-card-total { font-weight: 700; font-size: 1.1rem; color: var(--primary); text-align: right; margin-top: 0.5rem; }
+.order-card-date { font-size: 0.8rem; color: var(--text-muted); }
+/* ===== Modals ===== */
+.modal-content { border: none; border-radius: var(--radius); background: var(--bg-card); color: var(--text); }
+.modal-header { border-bottom: 1px solid var(--border); }
+.modal-footer { border-top: 1px solid var(--border); }
+.form-control, .form-select { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius-sm); padding: 0.75rem 1rem; }
+.form-control:focus, .form-select:focus { background: var(--bg); border-color: var(--primary); color: var(--text); box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15); }
+.form-label { font-weight: 500; color: var(--text); }
+.btn-primary { background: var(--primary); border-color: var(--primary); font-weight: 600; padding: 0.75rem 1.5rem; border-radius: var(--radius-sm); transition: var(--transition); }
+.btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
+.btn-outline-primary { color: var(--primary); border-color: var(--primary); font-weight: 600; }
+.btn-outline-primary:hover { background: var(--primary); border-color: var(--primary); }
+/* ===== Toast ===== */
+.toast { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.toast-header { background: var(--bg); color: var(--text); border-bottom: 1px solid var(--border); }
+/* ===== Order Summary ===== */
+.order-summary { background: var(--bg); padding: 1rem; border-radius: var(--radius-sm); }
+/* ===== Table ===== */
+.table { color: var(--text); }
+.table-striped > tbody > tr:nth-of-type(odd) > * { background: var(--bg); color: var(--text); }
+/* ===== Responsive ===== */
+@media (max-width: 991px) {
+.hero-title { font-size: 2.5rem; }
+.hero-image { height: 350px; }
+.floating-card img { width: 120px; height: 90px; }
+.admin-panel { flex-direction: column; }
+.admin-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+.admin-nav { flex-direction: row; flex-wrap: wrap; padding: 0.5rem; }
+.admin-nav-item { width: auto; padding: 0.5rem 0.75rem; }
+}
+@media (max-width: 767px) {
+.hero-title { font-size: 2rem; }
+.hero-stats { gap: 1rem; }
+.stat-number { font-size: 1.25rem; }
+.section-title { font-size: 1.75rem; }
+.categories-grid { grid-template-columns: repeat(3, 1fr); }
+.menu-grid { grid-template-columns: repeat(2, 1fr); }
+.restaurants-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 575px) {
+.menu-grid { grid-template-columns: 1fr; }
+.categories-grid { grid-template-columns: repeat(2, 1fr); }
+.filter-tabs { gap: 0.5rem; }
+.filter-btn { padding: 0.4rem 1rem; font-size: 0.85rem; }
+}
+/* ===== Animations ===== */
+.fade-in { animation: fadeInAnim 0.5s ease forwards; }
+.slide-up { animation: slideUp 0.5s ease forwards; }
+@keyframes fadeInAnim { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+.admin-badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; }
+/* Social media specific colors */
+.social-links a.instagram:hover { background: #E4405F; }
+.social-links a.telegram:hover { background: #0088cc; }
+.social-links a.whatsapp:hover { background: #25D366; }
+</style>
+<base target="_blank">
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
+<div class="container">
+<a class="navbar-brand" href="#">
+<i class="fas fa-utensils brand-icon"></i>
+<span class="brand-text">Yemek</span>
+</a>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav mx-auto">
+<li class="nav-item"><a class="nav-link active" href="#home" data-i18n="home">Басты бет</a></li>
+<li class="nav-item"><a class="nav-link" href="#menu" data-i18n="menu">Меню</a></li>
+<li class="nav-item"><a class="nav-link" href="#restaurants" data-i18n="restaurants">Мейрамханалар</a></li>
+<li class="nav-item"><a class="nav-link" href="#about" data-i18n="about">Біз туралы</a></li>
+</ul>
+<div class="nav-actions d-flex align-items-center gap-3">
+<button class="theme-toggle" id="themeToggle" title="Тема ауыстыру">
+<i class="fas fa-moon"></i>
+</button>
+<div class="language-switcher">
+<button class="lang-btn active" data-lang="kk">ҚАЗ</button>
+<button class="lang-btn" data-lang="ru">РУС</button>
+</div>
+<div class="cart-wrapper">
+<button class="cart-btn" id="cartBtn">
+<i class="fas fa-shopping-cart"></i>
+<span class="cart-count" id="cartCount">0</span>
+</button>
+</div>
+<div class="auth-buttons" id="authButtons">
+<button class="btn btn-outline-primary btn-sm" onclick="openLoginModal()">
+<i class="fas fa-sign-in-alt"></i> <span data-i18n="login">Кіру</span>
+</button>
+</div>
+<div class="user-profile d-none" id="userProfile">
+<div class="dropdown">
+<button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+<i class="fas fa-user-circle"></i> <span id="userName">User</span>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><a class="dropdown-item" href="#" onclick="openProfileModal()"><i class="fas fa-user"></i> <span data-i18n="profile">Профиль</span></a></li>
+<li><a class="dropdown-item" href="#" onclick="openMyOrdersModal()"><i class="fas fa-list"></i> <span data-i18n="myOrders">Тапсырыстарым</span></a></li>
+<li><hr class="dropdown-divider"></li>
+<li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Шығу</span></a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="hero-section" id="home">
+<div class="hero-overlay"></div>
+<div class="container">
+<div class="row align-items-center min-vh-100">
+<div class="col-lg-6">
+<div class="hero-content">
+<span class="hero-badge"><i class="fas fa-fire"></i> <span data-i18n="popular">Танымал</span></span>
+<h1 class="hero-title" data-i18n="heroTitle">Ең дәмді тамақты<br><span class="text-highlight">үйіңізге жеткіземіз</span></h1>
+<p class="hero-subtitle" data-i18n="heroSubtitle">500+ мейрамханадан таңдаңыз. Тез және ыңғайлы жеткізу қызметі.</p>
+<div class="search-box">
+<div class="input-group">
+<span class="input-group-text"><i class="fas fa-search"></i></span>
+<input type="text" class="form-control" id="searchInput" placeholder="Тамақ немесе мейрамхана іздеу..." data-i18n-placeholder="searchPlaceholder">
+<button class="btn btn-primary" onclick="searchFood()" data-i18n="search">Іздеу</button>
+</div>
+</div>
+<div class="hero-stats">
+<div class="stat-item"><span class="stat-number">500+</span><span class="stat-label" data-i18n="restaurants">Мейрамханалар</span></div>
+<div class="stat-item"><span class="stat-number">30</span><span class="stat-label" data-i18n="min">мин</span></div>
+<div class="stat-item"><span class="stat-number">50K+</span><span class="stat-label" data-i18n="orders">тапсырыс</span></div>
+</div>
+</div>
+</div>
+<div class="col-lg-6">
+<div class="hero-image">
+<div class="floating-card card-1">
+<img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200" alt="Pizza">
+<div class="card-info"><h5>Пицца Маргарита</h5><span class="price">2,990 ₸</span></div>
+</div>
+<div class="floating-card card-2">
+<img src="https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=200" alt="Burger">
+<div class="card-info"><h5>Бургер Классик</h5><span class="price">1,990 ₸</span></div>
+</div>
+<div class="floating-card card-3">
+<img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=200" alt="Pancakes">
+<div class="card-info"><h5>Блинчики</h5><span class="price">1,490 ₸</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Categories Section -->
+<section class="categories-section" id="categories">
+<div class="container">
+<div class="section-header text-center">
+<h2 class="section-title" data-i18n="categoriesTitle">Категориялар</h2>
+<p class="section-subtitle" data-i18n="categoriesSubtitle">Сүйікті тағамдарыңызды табыңыз</p>
+</div>
+<div class="categories-grid" id="categoriesGrid"></div>
+</div>
+</section>
+<!-- Popular Dishes Section -->
+<section class="menu-section" id="menu">
+<div class="container">
+<div class="section-header text-center">
+<h2 class="section-title" data-i18n="popularDishes">Танымал тағамдар</h2>
+<p class="section-subtitle" data-i18n="popularSubtitle">Ең танымал таңдаулар</p>
+</div>
+<div class="filter-tabs">
+<button class="filter-btn active" data-filter="all" data-i18n="all">Барлығы</button>
+<button class="filter-btn" data-filter="pizza" data-i18n="pizza">Пицца</button>
+<button class="filter-btn" data-filter="burger" data-i18n="burger">Бургер</button>
+<button class="filter-btn" data-filter="sushi" data-i18n="sushi">Суши</button>
+<button class="filter-btn" data-filter="dessert" data-i18n="dessert">Десерт</button>
+<button class="filter-btn" data-filter="drink" data-i18n="drink">Сусын</button>
+</div>
+<div class="menu-grid" id="menuGrid"></div>
+</div>
+</section>
+<!-- Restaurants Section -->
+<section class="restaurants-section" id="restaurants">
+<div class="container">
+<div class="section-header text-center">
+<h2 class="section-title" data-i18n="restaurantsTitle">Мейрамханалар</h2>
+<p class="section-subtitle" data-i18n="restaurantsSubtitle">Үздік мейрамханаларды таңдаңыз</p>
+</div>
+<div class="restaurants-grid" id="restaurantsGrid"></div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="features-section" id="about">
+<div class="container">
+<div class="row">
+<div class="col-lg-4">
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-shipping-fast"></i></div>
+<h3 data-i18n="fastDelivery">Жылдам жеткізу</h3>
+<p data-i18n="fastDeliveryDesc">30 минут ішінде тамақты үйіңізге жеткіземіз</p>
+</div>
+</div>
+<div class="col-lg-4">
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-star"></i></div>
+<h3 data-i18n="quality">Сапалы тағам</h3>
+<p data-i18n="qualityDesc">Тек тексерілген және сапалы мейрамханалар</p>
+</div>
+</div>
+<div class="col-lg-4">
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-headset"></i></div>
+<h3 data-i18n="support">24/7 Қолдау</h3>
+<p data-i18n="supportDesc">Кез келген уақытта бізбен хабарласыңыз</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="footer">
+<div class="container">
+<div class="row">
+<div class="col-lg-4">
+<div class="footer-brand"><i class="fas fa-utensils"></i><span>Yemek</span></div>
+<p class="footer-desc" data-i18n="footerDesc">Қазақстандағы ең танымал тамақ жеткізу қызметі. Дәмді тағамды жылдам және ыңғайлы жеткіземіз.</p>
+<div class="social-links">
+<a href="https://instagram.com/yemek.kz" target="_blank" class="instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+<a href="https://t.me/yemek_kz" target="_blank" class="telegram" title="Telegram"><i class="fab fa-telegram"></i></a>
+<a href="https://wa.me/77071234567" target="_blank" class="whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+</div>
+</div>
+<div class="col-lg-2">
+<h4 data-i18n="quickLinks">Жылдам сілтемелер</h4>
+<ul class="footer-links">
+<li><a href="#home" data-i18n="home">Басты бет</a></li>
+<li><a href="#menu" data-i18n="menu">Меню</a></li>
+<li><a href="#restaurants" data-i18n="restaurants">Мейрамханалар</a></li>
+<li><a href="#" onclick="openLoginModal()" data-i18n="login">Кіру</a></li>
+</ul>
+</div>
+<div class="col-lg-3">
+<h4 data-i18n="contact">Байланыс</h4>
+<ul class="footer-contact">
+<li><i class="fas fa-phone"></i> +7 (707) 123-45-67</li>
+<li><i class="fas fa-envelope"></i> info@yemek.kz</li>
+<li><i class="fas fa-map-marker-alt"></i> Алматы, Қазақстан</li>
+</ul>
+</div>
+<div class="col-lg-3">
+<h4 data-i18n="admin">Әкімші</h4>
+<button class="btn btn-outline-light btn-sm w-100 mb-2" onclick="openAdminLogin()">
+<i class="fas fa-user-shield"></i> <span data-i18n="adminPanel">Әкімші панелі</span>
+</button>
+<p class="text-muted small" data-i18n="adminDesc">Тек рұқсатталған пайдаланушыларға</p>
+</div>
+</div>
+<div class="footer-bottom">
+<p>&copy; 2024 Yemek. <span data-i18n="rights">Барлық құқықтар қорғалған.</span></p>
+</div>
+</div>
+</footer>
+<!-- Cart Sidebar -->
+<div class="cart-sidebar" id="cartSidebar">
+<div class="cart-header">
+<h4><i class="fas fa-shopping-cart"></i> <span data-i18n="cart">Себет</span></h4>
+<button class="cart-close" onclick="closeCart()">&times;</button>
+</div>
+<div class="cart-body" id="cartBody">
+<div class="cart-empty" id="cartEmpty"><i class="fas fa-shopping-basket"></i><p data-i18n="cartEmpty">Себет бос</p></div>
+<div class="cart-items" id="cartItems"></div>
+</div>
+<div class="cart-footer" id="cartFooter">
+<div class="cart-total"><span data-i18n="total">Барлығы:</span><span class="total-price" id="totalPrice">0 ₸</span></div>
+<button class="btn btn-primary w-100" onclick="checkout()" data-i18n="checkout">Тапсырыс беру</button>
+</div>
+</div>
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title"><i class="fas fa-sign-in-alt"></i> <span data-i18n="login">Кіру</span></h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<form id="loginForm">
+<div class="mb-3"><label class="form-label" data-i18n="email">Email</label><input type="email" class="form-control" id="loginEmail" required></div>
+<div class="mb-3">
+<label class="form-label" data-i18n="password">Құпия сөз</label>
+<div class="input-group">
+<input type="password" class="form-control" id="loginPassword" required>
+<button class="btn btn-outline-secondary" type="button" onclick="togglePassword('loginPassword', this)"><i class="fas fa-eye"></i></button>
+</div>
+</div>
+<button type="submit" class="btn btn-primary w-100" data-i18n="login">Кіру</button>
+</form>
+<div class="text-center mt-3"><p class="mb-0"><span data-i18n="noAccount">Аккаунт жоқ па?</span> <a href="#" onclick="switchToRegister()" data-i18n="register">Тіркелу</a></p></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title"><i class="fas fa-user-plus"></i> <span data-i18n="register">Тіркелу</span></h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<form id="registerForm">
+<div class="mb-3"><label class="form-label" data-i18n="name">Аты</label><input type="text" class="form-control" id="registerName" required></div>
+<div class="mb-3"><label class="form-label" data-i18n="email">Email</label><input type="email" class="form-control" id="registerEmail" required></div>
+<div class="mb-3">
+<label class="form-label" data-i18n="password">Құпия сөз</label>
+<div class="input-group">
+<input type="password" class="form-control" id="registerPassword" required minlength="6">
+<button class="btn btn-outline-secondary" type="button" onclick="togglePassword('registerPassword', this)"><i class="fas fa-eye"></i></button>
+</div>
+<small class="text-muted" data-i18n="passwordHint">Кемінде 6 таңба</small>
+</div>
+<div class="mb-3"><label class="form-label" data-i18n="confirmPassword">Құпия сөзді растау</label><input type="password" class="form-control" id="registerConfirmPassword" required></div>
+<button type="submit" class="btn btn-primary w-100" data-i18n="register">Тіркелу</button>
+</form>
+<div class="text-center mt-3"><p class="mb-0"><span data-i18n="haveAccount">Аккаунт бар ма?</span> <a href="#" onclick="switchToLogin()" data-i18n="login">Кіру</a></p></div>
+</div>
+</div>
+</div>
+</div>
+<!-- My Orders Modal -->
+<div class="modal fade" id="myOrdersModal" tabindex="-1">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title"><i class="fas fa-list"></i> <span data-i18n="myOrders">Тапсырыстарым</span></h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<div id="myOrdersList">
+<div class="text-center py-5 text-muted">
+<i class="fas fa-shopping-bag fa-3x mb-3"></i>
+<p data-i18n="noOrders">Тапсырыстар жоқ</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Admin Login Modal -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header bg-dark text-white">
+<h5 class="modal-title"><i class="fas fa-user-shield"></i> <span data-i18n="adminLogin">Әкімші кіруі</span></h5>
+<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<form id="adminLoginForm">
+<div class="mb-3"><label class="form-label" data-i18n="adminUsername">Әкімші логині</label><input type="text" class="form-control" id="adminUsername" required></div>
+<div class="mb-3">
+<label class="form-label" data-i18n="adminPassword">Әкімші құпия сөзі</label>
+<div class="input-group">
+<input type="password" class="form-control" id="adminPassword" required>
+<button class="btn btn-outline-secondary" type="button" onclick="togglePassword('adminPassword', this)"><i class="fas fa-eye"></i></button>
+</div>
+</div>
+<button type="submit" class="btn btn-dark w-100" data-i18n="login">Кіру</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Admin Panel Modal -->
+<div class="modal fade" id="adminPanelModal" tabindex="-1">
+<div class="modal-dialog modal-xl modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header bg-dark text-white">
+<h5 class="modal-title"><i class="fas fa-cog"></i> <span data-i18n="adminPanel">Әкімші панелі</span></h5>
+<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body p-0">
+<div class="admin-panel">
+<div class="admin-sidebar">
+<div class="admin-nav">
+<button class="admin-nav-item active" onclick="showAdminTab('dashboard')"><i class="fas fa-chart-line"></i> <span data-i18n="dashboard">Басқару тақтасы</span></button>
+<button class="admin-nav-item" onclick="showAdminTab('orders')"><i class="fas fa-shopping-bag"></i> <span data-i18n="orders">Тапсырыстар</span></button>
+<button class="admin-nav-item" onclick="showAdminTab('menu')"><i class="fas fa-utensils"></i> <span data-i18n="menuManagement">Меню басқару</span></button>
+<button class="admin-nav-item" onclick="showAdminTab('users')"><i class="fas fa-users"></i> <span data-i18n="users">Пайдаланушылар</span></button>
+<button class="admin-nav-item" onclick="showAdminTab('settings')"><i class="fas fa-cog"></i> <span data-i18n="settings">Параметрлер</span></button>
+</div>
+</div>
+<div class="admin-content">
+<div class="admin-tab active" id="dashboardTab">
+<h4 data-i18n="dashboard">Басқару тақтасы</h4>
+<div class="stats-grid">
+<div class="stat-card"><i class="fas fa-shopping-bag"></i><div><span class="stat-value" id="totalOrders">0</span><span class="stat-label" data-i18n="totalOrders">Барлық тапсырыстар</span></div></div>
+<div class="stat-card"><i class="fas fa-users"></i><div><span class="stat-value" id="totalUsers">0</span><span class="stat-label" data-i18n="totalUsers">Пайдаланушылар</span></div></div>
+<div class="stat-card"><i class="fas fa-money-bill-wave"></i><div><span class="stat-value" id="totalRevenue">0 ₸</span><span class="stat-label" data-i18n="revenue">Кіріс</span></div></div>
+<div class="stat-card"><i class="fas fa-utensils"></i><div><span class="stat-value" id="totalItems">0</span><span class="stat-label" data-i18n="menuItems">Тағамдар</span></div></div>
+</div>
+</div>
+<div class="admin-tab" id="ordersTab">
+<h4 data-i18n="orders">Тапсырыстар</h4>
+<div class="table-responsive">
+<table class="table table-striped">
+<thead><tr><th>ID</th><th data-i18n="customer">Тапсырыс беруші</th><th data-i18n="items">Тағамдар</th><th data-i18n="total">Барлығы</th><th data-i18n="status">Күйі</th><th data-i18n="date">Күні</th></tr></thead>
+<tbody id="ordersTableBody"></tbody>
+</table>
+</div>
+</div>
+<div class="admin-tab" id="menuTab">
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h4 data-i18n="menuManagement">Меню басқару</h4>
+<button class="btn btn-primary" onclick="openAddItemModal()"><i class="fas fa-plus"></i> <span data-i18n="addItem">Тағам қосу</span></button>
+</div>
+<div class="table-responsive">
+<table class="table table-striped">
+<thead><tr><th>ID</th><th data-i18n="image">Сурет</th><th data-i18n="name">Аты</th><th data-i18n="category">Категория</th><th data-i18n="price">Бағасы</th><th data-i18n="actions">Әрекеттер</th></tr></thead>
+<tbody id="menuTableBody"></tbody>
+</table>
+</div>
+</div>
+<div class="admin-tab" id="usersTab">
+<h4 data-i18n="users">Пайдаланушылар</h4>
+<div class="table-responsive">
+<table class="table table-striped">
+<thead><tr><th>ID</th><th data-i18n="name">Аты</th><th data-i18n="email">Email</th><th data-i18n="role">Рөлі</th><th data-i18n="date">Тіркелген күні</th></tr></thead>
+<tbody id="usersTableBody"></tbody>
+</table>
+</div>
+</div>
+<div class="admin-tab" id="settingsTab">
+<h4 data-i18n="settings">Параметрлер</h4>
+<div class="settings-form">
+<div class="mb-3"><label class="form-label" data-i18n="siteName">Сайт атауы</label><input type="text" class="form-control" id="siteName" value="Yemek"></div>
+<div class="mb-3"><label class="form-label" data-i18n="deliveryFee">Жеткізу ақысы</label><input type="number" class="form-control" id="deliveryFee" value="500"></div>
+<div class="mb-3"><label class="form-label" data-i18n="minOrder">Ең аз тапсырыс</label><input type="number" class="form-control" id="minOrder" value="1000"></div>
+<button class="btn btn-primary" onclick="saveSettings()" data-i18n="save">Сақтау</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Add/Edit Item Modal -->
+<div class="modal fade" id="itemModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="itemModalTitle"><span data-i18n="addItem">Тағам қосу</span></h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<form id="itemForm">
+<input type="hidden" id="itemId">
+<div class="mb-3"><label class="form-label" data-i18n="name">Аты</label><input type="text" class="form-control" id="itemName" required></div>
+<div class="mb-3">
+<label class="form-label" data-i18n="category">Категория</label>
+<select class="form-select" id="itemCategory" required>
+<option value="pizza">Пицца</option>
+<option value="burger">Бургер</option>
+<option value="sushi">Суши</option>
+<option value="dessert">Десерт</option>
+<option value="drink">Сусын</option>
+<option value="salad">Салат</option>
+</select>
+</div>
+<div class="mb-3"><label class="form-label" data-i18n="price">Бағасы (₸)</label><input type="number" class="form-control" id="itemPrice" required min="1"></div>
+<div class="mb-3"><label class="form-label" data-i18n="description">Сипаттама</label><textarea class="form-control" id="itemDescription" rows="3"></textarea></div>
+<div class="mb-3"><label class="form-label" data-i18n="imageUrl">Сурет URL</label><input type="url" class="form-control" id="itemImage" placeholder="https://..."></div>
+<button type="submit" class="btn btn-primary w-100" data-i18n="save">Сақтау</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Checkout Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title"><i class="fas fa-credit-card"></i> <span data-i18n="checkout">Тапсырыс беру</span></h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<form id="checkoutForm">
+<div class="mb-3"><label class="form-label" data-i18n="address">Мекен-жай</label><textarea class="form-control" id="deliveryAddress" rows="2" required></textarea></div>
+<div class="mb-3"><label class="form-label" data-i18n="phone">Телефон</label><input type="tel" class="form-control" id="deliveryPhone" required></div>
+<div class="mb-3">
+<label class="form-label" data-i18n="payment">Төлем тәсілі</label>
+<select class="form-select" id="paymentMethod">
+<option value="cash">Қолма-қол ақша</option>
+<option value="card">Банк картасы</option>
+<option value="kaspi">Kaspi Pay</option>
+</select>
+</div>
+<div class="mb-3"><label class="form-label" data-i18n="notes">Ескертпелер</label><textarea class="form-control" id="orderNotes" rows="2"></textarea></div>
+<div class="order-summary mb-3">
+<div class="d-flex justify-content-between"><span data-i18n="subtotal">Тағамдар:</span><span id="checkoutSubtotal">0 ₸</span></div>
+<div class="d-flex justify-content-between"><span data-i18n="delivery">Жеткізу:</span><span id="checkoutDelivery">500 ₸</span></div>
+<div class="d-flex justify-content-between fw-bold fs-5 mt-2 pt-2 border-top"><span data-i18n="total">Барлығы:</span><span id="checkoutTotal">0 ₸</span></div>
+</div>
+<button type="submit" class="btn btn-primary w-100" data-i18n="placeOrder">Тапсырыс беру</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ===== Data Store =====
+const store = {
+cart: JSON.parse(localStorage.getItem('cart')) || [],
+user: JSON.parse(localStorage.getItem('user')) || null,
+admin: JSON.parse(localStorage.getItem('admin')) || null,
+lang: localStorage.getItem('lang') || 'kk',
+theme: localStorage.getItem('theme') || 'light',
+orders: JSON.parse(localStorage.getItem('orders')) || [],
+users: JSON.parse(localStorage.getItem('users')) || [
+{ id: 1, name: 'Админ', email: 'admin@yemek.kz', password: 'admin123', role: 'admin', date: '2024-01-01' }
+],
+menuItems: JSON.parse(localStorage.getItem('menuItems')) || [
+{ id: 1, name: 'Пицца Маргарита', category: 'pizza', price: 2990, description: 'Классикалық итальяндық пицца - томаты, моцарелла, базилик', image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400', popular: true },
+{ id: 2, name: 'Пицца Пепперони', category: 'pizza', price: 3490, description: 'Пепперони, моцарелла, томат соусы', image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400', popular: true },
+{ id: 3, name: 'Пицца 4 сыры', category: 'pizza', price: 3990, description: 'Моцарелла, пармезан, горгонзола, чеддар', image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400' },
+{ id: 4, name: 'Классик Бургер', category: 'burger', price: 1990, description: 'Сиыр еті, салат, помидор, сыр, майонез', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400', popular: true },
+{ id: 5, name: 'Чизбургер', category: 'burger', price: 2290, description: 'Двойной сыр, сиыр еті, карамелизированный лук', image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400' },
+{ id: 6, name: 'Бургер BBQ', category: 'burger', price: 2590, description: 'BBQ соусы, бекон, сыр, салат', image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400' },
+{ id: 7, name: 'Филадельфия ролл', category: 'sushi', price: 3290, description: 'Лосось, сыр Филадельфия, авокадо, огурец', image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400', popular: true },
+{ id: 8, name: 'Калифорния ролл', category: 'sushi', price: 2890, description: 'Краб, авокадо, огурец, тобико', image: 'https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=400' },
+{ id: 9, name: 'Сет "Токио"', category: 'sushi', price: 5990, description: '24 дана: Филадельфия, Калифорния, Дракон', image: 'https://images.unsplash.com/photo-1553621042-f6e147245754?w=400' },
+{ id: 10, name: 'Тирамису', category: 'dessert', price: 1490, description: 'Итальяндық десерт - маскарпоне, кофе, какао', image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400', popular: true },
+{ id: 11, name: 'Чизкейк', category: 'dessert', price: 1290, description: 'Нью-Йорк чизкейк - кремді және дәмді', image: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400' },
+{ id: 12, name: 'Шоколадты брауни', category: 'dessert', price: 1190, description: 'Ыстық шоколадты брауни - ванильді балмұздақпен', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400' },
+{ id: 13, name: 'Кола 1л', category: 'drink', price: 590, description: 'Coca-Cola 1 литр', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400' },
+{ id: 14, name: 'Фанта 1л', category: 'drink', price: 590, description: 'Fanta 1 литр', image: 'https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?w=400' },
+{ id: 15, name: 'Смузи манго', category: 'drink', price: 990, description: 'Таза манго смузи - балмұздақсыз', image: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=400' },
+{ id: 16, name: 'Цезарь салаты', category: 'salad', price: 1890, description: 'Куриная грудка, пармезан, сухарики, соус Цезарь', image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=400' },
+{ id: 17, name: 'Греческий салат', category: 'salad', price: 1590, description: 'Помидор, огурец, фета, оливки, лук', image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400' },
+{ id: 18, name: 'Двойной бургер', category: 'burger', price: 3290, description: 'Двойная котлета, двойной сыр, бекон', image: 'https://images.unsplash.com/photo-1596956470007-2bf6095e7e16?w=400' }
+],
+restaurants: [
+{ id: 1, name: 'Dodo Pizza', rating: 4.8, time: '25-35 мин', minOrder: 2000, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400', tags: ['Пицца', 'Итальянская'] },
+{ id: 2, name: 'KazBurger', rating: 4.6, time: '20-30 мин', minOrder: 1500, image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=400', tags: ['Бургеры', 'Американская'] },
+{ id: 3, name: 'Sushi Master', rating: 4.9, time: '30-40 мин', minOrder: 3000, image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400', tags: ['Суши', 'Японская'] },
+{ id: 4, name: 'Sweet Life', rating: 4.5, time: '15-25 мин', minOrder: 1000, image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400', tags: ['Десерты', 'Выпечка'] },
+{ id: 5, name: 'Burger King', rating: 4.4, time: '20-30 мин', minOrder: 1500, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400', tags: ['Бургеры', 'Фастфуд'] },
+{ id: 6, name: 'Pizza Hut', rating: 4.7, time: '25-35 мин', minOrder: 2000, image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400', tags: ['Пицца', 'Паста'] }
+],
+categories: [
+{ id: 'pizza', name: { kk: 'Пицца', ru: 'Пицца' }, icon: 'fa-pizza-slice' },
+{ id: 'burger', name: { kk: 'Бургер', ru: 'Бургеры' }, icon: 'fa-hamburger' },
+{ id: 'sushi', name: { kk: 'Суши', ru: 'Суши' }, icon: 'fa-fish' },
+{ id: 'salad', name: { kk: 'Салат', ru: 'Салаты' }, icon: 'fa-leaf' },
+{ id: 'dessert', name: { kk: 'Десерт', ru: 'Десерты' }, icon: 'fa-ice-cream' },
+{ id: 'drink', name: { kk: 'Сусын', ru: 'Напитки' }, icon: 'fa-glass-whiskey' }
+]
+};
+const translations = {
+kk: {
+home: 'Басты бет', menu: 'Меню', restaurants: 'Мейрамханалар', about: 'Біз туралы',
+popular: 'Танымал', heroTitle: 'Ең дәмді тамақты', heroSubtitle: '500+ мейрамханадан таңдаңыз. Тез және ыңғайлы жеткізу қызметі.',
+searchPlaceholder: 'Тамақ немесе мейрамхана іздеу...', search: 'Іздеу', min: 'мин', orders: 'тапсырыс',
+categoriesTitle: 'Категориялар', categoriesSubtitle: 'Сүйікті тағамдарыңызды табыңыз',
+popularDishes: 'Танымал тағамдар', popularSubtitle: 'Ең танымал таңдаулар',
+all: 'Барлығы', pizza: 'Пицца', burger: 'Бургер', sushi: 'Суши', dessert: 'Десерт', drink: 'Сусын',
+restaurantsTitle: 'Мейрамханалар', restaurantsSubtitle: 'Үздік мейрамханаларды таңдаңыз',
+fastDelivery: 'Жылдам жеткізу', fastDeliveryDesc: '30 минут ішінде тамақты үйіңізге жеткіземіз',
+quality: 'Сапалы тағам', qualityDesc: 'Тек тексерілген және сапалы мейрамханалар',
+support: '24/7 Қолдау', supportDesc: 'Кез келген уақытта бізбен хабарласыңыз',
+footerDesc: 'Қазақстандағы ең танымал тамақ жеткізу қызметі. Дәмді тағамды жылдам және ыңғайлы жеткіземіз.',
+quickLinks: 'Жылдам сілтемелер', contact: 'Байланыс', admin: 'Әкімші',
+adminPanel: 'Әкімші панелі', adminDesc: 'Тек рұқсатталған пайдаланушыларға',
+rights: 'Барлық құқықтар қорғалған.', login: 'Кіру', register: 'Тіркелу',
+email: 'Email', password: 'Құпия сөз', confirmPassword: 'Құпия сөзді растау',
+name: 'Аты', noAccount: 'Аккаунт жоқ па?', haveAccount: 'Аккаунт бар ма?',
+passwordHint: 'Кемінде 6 таңба', adminLogin: 'Әкімші кіруі',
+adminUsername: 'Әкімші логині', adminPassword: 'Әкімші құпия сөзі',
+dashboard: 'Басқару тақтасы', menuManagement: 'Меню басқару', users: 'Пайдаланушылар',
+settings: 'Параметрлер', totalOrders: 'Барлық тапсырыстар', totalUsers: 'Пайдаланушылар',
+revenue: 'Кіріс', menuItems: 'Тағамдар', customer: 'Тапсырыс беруші', items: 'Тағамдар',
+total: 'Барлығы', status: 'Күйі', date: 'Күні', addItem: 'Тағам қосу',
+image: 'Сурет', category: 'Категория', price: 'Бағасы', actions: 'Әрекеттер',
+description: 'Сипаттама', imageUrl: 'Сурет URL', save: 'Сақтау',
+siteName: 'Сайт атауы', deliveryFee: 'Жеткізу ақысы', minOrder: 'Ең аз тапсырыс',
+cart: 'Себет', cartEmpty: 'Себет бос', checkout: 'Тапсырыс беру',
+address: 'Мекен-жай', phone: 'Телефон', payment: 'Төлем тәсілі', notes: 'Ескертпелер',
+subtotal: 'Тағамдар:', delivery: 'Жеткізу:', placeOrder: 'Тапсырыс беру',
+addedToCart: 'Себетке қосылды!', removedFromCart: 'Себеттен өшірілді',
+orderPlaced: 'Тапсырыс қабылданды!', welcome: 'Қош келдіңіз', logout: 'Шығу',
+profile: 'Профиль', myOrders: 'Тапсырыстарым', error: 'Қате', success: 'Сәтті',
+fillAllFields: 'Барлық өрістерді толтырыңыз', passwordsNotMatch: 'Құпия сөздер сәйкес келмейді',
+invalidCredentials: 'Қате логин немесе құпия сөз', userExists: 'Бұл email тіркелген',
+registered: 'Сәтті тіркелдіңіз!', adminOnly: 'Тек әкімшіге рұқсат',
+itemAdded: 'Тағам қосылды', itemUpdated: 'Тағам жаңартылды', itemDeleted: 'Тағам өшірілді',
+confirmDelete: 'Өшіруді растайсыз ба?', role: 'Рөлі', salad: 'Салат',
+noOrders: 'Тапсырыстар жоқ', orderNumber: 'Тапсырыс №'
+},
+ru: {
+home: 'Главная', menu: 'Меню', restaurants: 'Рестораны', about: 'О нас',
+popular: 'Популярное', heroTitle: 'Самая вкусная еда', heroSubtitle: 'Выбирайте из 500+ ресторанов. Быстрая и удобная доставка.',
+searchPlaceholder: 'Поиск еды или ресторана...', search: 'Поиск', min: 'мин', orders: 'заказов',
+categoriesTitle: 'Категории', categoriesSubtitle: 'Найдите свои любимые блюда',
+popularDishes: 'Популярные блюда', popularSubtitle: 'Самые популярные выборы',
+all: 'Все', pizza: 'Пицца', burger: 'Бургеры', sushi: 'Суши', dessert: 'Десерты', drink: 'Напитки',
+restaurantsTitle: 'Рестораны', restaurantsSubtitle: 'Выберите лучшие рестораны',
+fastDelivery: 'Быстрая доставка', fastDeliveryDesc: 'Доставим еду за 30 минут',
+quality: 'Качественная еда', qualityDesc: 'Только проверенные рестораны',
+support: 'Поддержка 24/7', supportDesc: 'Свяжитесь с нами в любое время',
+footerDesc: 'Самый популярный сервис доставки еды в Казахстане. Быстрая и удобная доставка.',
+quickLinks: 'Быстрые ссылки', contact: 'Контакты', admin: 'Админ',
+adminPanel: 'Панель администратора', adminDesc: 'Только для авторизованных пользователей',
+rights: 'Все права защищены.', login: 'Вход', register: 'Регистрация',
+email: 'Email', password: 'Пароль', confirmPassword: 'Подтвердите пароль',
+name: 'Имя', noAccount: 'Нет аккаунта?', haveAccount: 'Есть аккаунт?',
+passwordHint: 'Минимум 6 символов', adminLogin: 'Вход администратора',
+adminUsername: 'Логин админа', adminPassword: 'Пароль админа',
+dashboard: 'Панель управления', menuManagement: 'Управление меню', users: 'Пользователи',
+settings: 'Настройки', totalOrders: 'Все заказы', totalUsers: 'Пользователи',
+revenue: 'Доход', menuItems: 'Блюда', customer: 'Клиент', items: 'Блюда',
+total: 'Итого', status: 'Статус', date: 'Дата', addItem: 'Добавить блюдо',
+image: 'Изображение', category: 'Категория', price: 'Цена', actions: 'Действия',
+description: 'Описание', imageUrl: 'URL изображения', save: 'Сохранить',
+siteName: 'Название сайта', deliveryFee: 'Стоимость доставки', minOrder: 'Минимальный заказ',
+cart: 'Корзина', cartEmpty: 'Корзина пуста', checkout: 'Оформить заказ',
+address: 'Адрес', phone: 'Телефон', payment: 'Способ оплаты', notes: 'Примечания',
+subtotal: 'Блюда:', delivery: 'Доставка:', placeOrder: 'Разместить заказ',
+addedToCart: 'Добавлено в корзину!', removedFromCart: 'Удалено из корзины',
+orderPlaced: 'Заказ принят!', welcome: 'Добро пожаловать', logout: 'Выход',
+profile: 'Профиль', myOrders: 'Мои заказы', error: 'Ошибка', success: 'Успешно',
+fillAllFields: 'Заполните все поля', passwordsNotMatch: 'Пароли не совпадают',
+invalidCredentials: 'Неверный логин или пароль', userExists: 'Этот email уже зарегистрирован',
+registered: 'Успешно зарегистрированы!', adminOnly: 'Только для администратора',
+itemAdded: 'Блюдо добавлено', itemUpdated: 'Блюдо обновлено', itemDeleted: 'Блюдо удалено',
+confirmDelete: 'Подтвердите удаление', role: 'Роль', salad: 'Салаты',
+noOrders: 'Заказов нет', orderNumber: 'Заказ №'
+}
+};
+// ===== Initialize =====
+document.addEventListener('DOMContentLoaded', function() {
+initTheme();
+initLanguage();
+renderCategories();
+renderMenu('all');
+renderRestaurants();
+updateCartUI();
+updateAuthUI();
+setupEventListeners();
+setupScrollEffects();
+});
+// ===== Theme =====
+function initTheme() {
+document.documentElement.setAttribute('data-theme', store.theme);
+updateThemeIcon();
+}
+function toggleTheme() {
+store.theme = store.theme === 'light' ? 'dark' : 'light';
+localStorage.setItem('theme', store.theme);
+document.documentElement.setAttribute('data-theme', store.theme);
+updateThemeIcon();
+}
+function updateThemeIcon() {
+const icon = document.querySelector('#themeToggle i');
+if (icon) icon.className = store.theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+}
+// ===== Language =====
+function initLanguage() { updateLanguageUI(); }
+function setLanguage(lang) {
+store.lang = lang;
+localStorage.setItem('lang', lang);
+updateLanguageUI();
+renderCategories();
+renderMenu(document.querySelector('.filter-btn.active')?.dataset.filter || 'all');
+}
+function updateLanguageUI() {
+document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === store.lang));
+document.querySelectorAll('[data-i18n]').forEach(el => {
+const key = el.dataset.i18n;
+if (translations[store.lang][key]) el.textContent = translations[store.lang][key];
+});
+document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+const key = el.dataset.i18nPlaceholder;
+if (translations[store.lang][key]) el.placeholder = translations[store.lang][key];
+});
+}
+function t(key) { return translations[store.lang][key] || key; }
+// ===== Render =====
+function renderCategories() {
+const grid = document.getElementById('categoriesGrid');
+if (!grid) return;
+grid.innerHTML = store.categories.map(cat => `
+<div class="category-card" onclick="filterByCategory('${cat.id}')">
+<div class="category-icon"><i class="fas ${cat.icon}"></i></div>
+<h5>${cat.name[store.lang]}</h5>
+</div>
+`).join('');
+}
+function filterByCategory(category) {
+document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === category));
+renderMenu(category);
+document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+}
+function renderMenu(filter) {
+const grid = document.getElementById('menuGrid');
+if (!grid) return;
+let items = store.menuItems;
+if (filter && filter !== 'all') items = items.filter(item => item.category === filter);
+grid.innerHTML = items.map(item => `
+<div class="menu-card slide-up">
+<div class="card-img-wrapper">
+<img src="${item.image}" alt="${item.name}" loading="lazy">
+${item.popular ? '<span class="card-badge popular">' + t('popular') + '</span>' : ''}
+</div>
+<div class="card-body">
+<h5 class="card-title">${item.name}</h5>
+<p class="card-text">${item.description}</p>
+<div class="card-footer">
+<span class="price">${item.price.toLocaleString()} ₸</span>
+<button class="add-btn" onclick="addToCart(${item.id})" title="${t('cart')}"><i class="fas fa-plus"></i></button>
+</div>
+</div>
+</div>
+`).join('');
+}
+function renderRestaurants() {
+const grid = document.getElementById('restaurantsGrid');
+if (!grid) return;
+grid.innerHTML = store.restaurants.map(rest => `
+<div class="restaurant-card">
+<div class="restaurant-img">
+<img src="${rest.image}" alt="${rest.name}" loading="lazy">
+<div class="restaurant-rating"><i class="fas fa-star"></i> ${rest.rating}</div>
+</div>
+<div class="restaurant-info">
+<h4>${rest.name}</h4>
+<div class="restaurant-meta">
+<span><i class="fas fa-clock"></i> ${rest.time}</span>
+<span><i class="fas fa-shopping-bag"></i> ${rest.minOrder.toLocaleString()} ₸</span>
+</div>
+<div class="restaurant-tags">${rest.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+</div>
+</div>
+`).join('');
+}
+// ===== Cart =====
+function addToCart(itemId) {
+const item = store.menuItems.find(i => i.id === itemId);
+if (!item) return;
+const existing = store.cart.find(c => c.id === itemId);
+if (existing) existing.quantity++;
+else store.cart.push({ ...item, quantity: 1 });
+saveCart();
+updateCartUI();
+showToast(t('addedToCart'), 'success');
+}
+function removeFromCart(itemId) {
+store.cart = store.cart.filter(c => c.id !== itemId);
+saveCart();
+updateCartUI();
+showToast(t('removedFromCart'), 'info');
+}
+function updateQuantity(itemId, delta) {
+const item = store.cart.find(c => c.id === itemId);
+if (!item) return;
+item.quantity += delta;
+if (item.quantity <= 0) { removeFromCart(itemId); return; }
+saveCart();
+updateCartUI();
+}
+function saveCart() { localStorage.setItem('cart', JSON.stringify(store.cart)); }
+function updateCartUI() {
+const count = document.getElementById('cartCount');
+const itemsContainer = document.getElementById('cartItems');
+const emptyMsg = document.getElementById('cartEmpty');
+const footer = document.getElementById('cartFooter');
+const totalPrice = document.getElementById('totalPrice');
+const totalItems = store.cart.reduce((sum, item) => sum + item.quantity, 0);
+const total = store.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+if (count) count.textContent = totalItems;
+if (store.cart.length === 0) {
+if (itemsContainer) itemsContainer.style.display = 'none';
+if (emptyMsg) emptyMsg.style.display = 'block';
+if (footer) footer.style.display = 'none';
+} else {
+if (itemsContainer) {
+itemsContainer.style.display = 'block';
+itemsContainer.innerHTML = store.cart.map(item => `
+<div class="cart-item">
+<img src="${item.image}" alt="${item.name}">
+<div class="cart-item-info">
+<h6>${item.name}</h6>
+<span class="price">${(item.price * item.quantity).toLocaleString()} ₸</span>
+<div class="cart-item-actions">
+<button onclick="updateQuantity(${item.id}, -1)"><i class="fas fa-minus"></i></button>
+<span class="quantity">${item.quantity}</span>
+<button onclick="updateQuantity(${item.id}, 1)"><i class="fas fa-plus"></i></button>
+</div>
+</div>
+<div class="cart-item-remove" onclick="removeFromCart(${item.id})"><i class="fas fa-trash-alt"></i></div>
+</div>
+`).join('');
+}
+if (emptyMsg) emptyMsg.style.display = 'none';
+if (footer) footer.style.display = 'block';
+}
+if (totalPrice) totalPrice.textContent = total.toLocaleString() + ' ₸';
+}
+function openCart() {
+document.getElementById('cartSidebar').classList.add('open');
+document.getElementById('cartOverlay').classList.add('open');
+document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+document.getElementById('cartSidebar').classList.remove('open');
+document.getElementById('cartOverlay').classList.remove('open');
+document.body.style.overflow = '';
+}
+// ===== Auth =====
+function openLoginModal() { new bootstrap.Modal(document.getElementById('loginModal')).show(); }
+function openRegisterModal() { new bootstrap.Modal(document.getElementById('registerModal')).show(); }
+function switchToRegister() {
+bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+setTimeout(() => openRegisterModal(), 300);
+}
+function switchToLogin() {
+bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
+setTimeout(() => openLoginModal(), 300);
+}
+function togglePassword(inputId, btn) {
+const input = document.getElementById(inputId);
+const icon = btn.querySelector('i');
+if (input.type === 'password') { input.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+else { input.type = 'password'; icon.className = 'fas fa-eye'; }
+}
+function updateAuthUI() {
+const authButtons = document.getElementById('authButtons');
+const userProfile = document.getElementById('userProfile');
+const userName = document.getElementById('userName');
+if (store.user) {
+if (authButtons) authButtons.classList.add('d-none');
+if (userProfile) { userProfile.classList.remove('d-none'); if (userName) userName.textContent = store.user.name; }
+} else {
+if (authButtons) authButtons.classList.remove('d-none');
+if (userProfile) userProfile.classList.add('d-none');
+}
+}
+function logout() {
+store.user = null;
+localStorage.removeItem('user');
+updateAuthUI();
+showToast(t('logout'), 'info');
+}
+// ===== Forms =====
+document.addEventListener('submit', function(e) {
+if (e.target.id === 'loginForm') {
+e.preventDefault();
+const email = document.getElementById('loginEmail').value.trim();
+const password = document.getElementById('loginPassword').value;
+if (!email || !password) { showToast(t('fillAllFields'), 'error'); return; }
+const user = store.users.find(u => u.email === email && u.password === password);
+if (user) {
+store.user = { id: user.id, name: user.name, email: user.email, role: user.role };
+localStorage.setItem('user', JSON.stringify(store.user));
+updateAuthUI();
+bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+showToast(t('welcome') + ', ' + user.name + '!', 'success');
+document.getElementById('loginForm').reset();
+} else showToast(t('invalidCredentials'), 'error');
+}
+if (e.target.id === 'registerForm') {
+e.preventDefault();
+const name = document.getElementById('registerName').value.trim();
+const email = document.getElementById('registerEmail').value.trim();
+const password = document.getElementById('registerPassword').value;
+const confirmPassword = document.getElementById('registerConfirmPassword').value;
+if (!name || !email || !password) { showToast(t('fillAllFields'), 'error'); return; }
+if (password !== confirmPassword) { showToast(t('passwordsNotMatch'), 'error'); return; }
+if (store.users.find(u => u.email === email)) { showToast(t('userExists'), 'error'); return; }
+const newUser = { id: Date.now(), name, email, password, role: 'user', date: new Date().toISOString().split('T')[0] };
+store.users.push(newUser);
+localStorage.setItem('users', JSON.stringify(store.users));
+store.user = { id: newUser.id, name, email, role: 'user' };
+localStorage.setItem('user', JSON.stringify(store.user));
+updateAuthUI();
+bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
+showToast(t('registered'), 'success');
+document.getElementById('registerForm').reset();
+}
+if (e.target.id === 'adminLoginForm') {
+e.preventDefault();
+const username = document.getElementById('adminUsername').value.trim();
+const password = document.getElementById('adminPassword').value;
+if (username === 'admin' && password === 'admin123') {
+store.admin = { username, loginTime: new Date().toISOString() };
+localStorage.setItem('admin', JSON.stringify(store.admin));
+bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
+openAdminPanel();
+showToast('Admin ' + t('login') + ' сәтті!', 'success');
+document.getElementById('adminLoginForm').reset();
+} else showToast(t('invalidCredentials'), 'error');
+}
+if (e.target.id === 'itemForm') { e.preventDefault(); saveMenuItem(); }
+if (e.target.id === 'checkoutForm') { e.preventDefault(); placeOrder(); }
+});
+// ===== My Orders =====
+function openMyOrdersModal() {
+renderMyOrders();
+new bootstrap.Modal(document.getElementById('myOrdersModal')).show();
+}
+function renderMyOrders() {
+const container = document.getElementById('myOrdersList');
+if (!container) return;
+let userOrders = store.orders;
+if (store.user) {
+userOrders = store.orders.filter(o => o.userId === store.user.id);
+}
+if (userOrders.length === 0) {
+container.innerHTML = `
+<div class="text-center py-5 text-muted">
+<i class="fas fa-shopping-bag fa-3x mb-3"></i>
+<p data-i18n="noOrders">${t('noOrders')}</p>
+</div>
+`;
+return;
+}
+container.innerHTML = userOrders.slice().reverse().map(order => `
+<div class="order-card">
+<div class="order-card-header">
+<span class="order-card-id">${t('orderNumber')} ${order.id}</span>
+<span class="order-card-status status-${order.status.toLowerCase()}">${order.status}</span>
+</div>
+<div class="order-card-items">
+${order.items.map(item => `
+<div class="order-card-item">
+<span>${item.name} x${item.quantity}</span>
+<span>${(item.price * item.quantity).toLocaleString()} ₸</span>
+</div>
+`).join('')}
+</div>
+<div class="order-card-total">${t('total')} ${order.total.toLocaleString()} ₸</div>
+<div class="order-card-date"><i class="fas fa-calendar-alt"></i> ${order.date} | <i class="fas fa-map-marker-alt"></i> ${order.address}</div>
+</div>
+`).join('');
+}
+// ===== Admin =====
+function openAdminLogin() { new bootstrap.Modal(document.getElementById('adminLoginModal')).show(); }
+function openAdminPanel() {
+if (!store.admin) { showToast(t('adminOnly'), 'error'); return; }
+updateAdminDashboard();
+new bootstrap.Modal(document.getElementById('adminPanelModal')).show();
+}
+function showAdminTab(tab) {
+document.querySelectorAll('.admin-nav-item').forEach(btn => btn.classList.remove('active'));
+document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+event.target.closest('.admin-nav-item').classList.add('active');
+document.getElementById(tab + 'Tab').classList.add('active');
+if (tab === 'orders') renderOrdersTable();
+if (tab === 'menu') renderMenuTable();
+if (tab === 'users') renderUsersTable();
+}
+function updateAdminDashboard() {
+document.getElementById('totalOrders').textContent = store.orders.length;
+document.getElementById('totalUsers').textContent = store.users.filter(u => u.role === 'user').length;
+document.getElementById('totalRevenue').textContent = store.orders.reduce((sum, o) => sum + o.total, 0).toLocaleString() + ' ₸';
+document.getElementById('totalItems').textContent = store.menuItems.length;
+}
+function renderOrdersTable() {
+const tbody = document.getElementById('ordersTableBody');
+if (!tbody) return;
+if (store.orders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">' + t('cartEmpty') + '</td></tr>'; return; }
+tbody.innerHTML = store.orders.slice().reverse().map(order => `
+<tr><td>#${order.id}</td><td>${order.customer}</td><td>${order.items.length} ${t('items')}</td><td>${order.total.toLocaleString()} ₸</td><td><span class="badge bg-success">${order.status}</span></td><td>${order.date}</td></tr>
+`).join('');
+}
+function renderMenuTable() {
+const tbody = document.getElementById('menuTableBody');
+if (!tbody) return;
+tbody.innerHTML = store.menuItems.map(item => `
+<tr><td>${item.id}</td><td><img src="${item.image}" alt="" style="width:50px;height:40px;object-fit:cover;border-radius:4px;"></td><td>${item.name}</td><td>${item.category}</td><td>${item.price.toLocaleString()} ₸</td>
+<td><button class="btn btn-sm btn-outline-primary" onclick="editItem(${item.id})"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger" onclick="deleteItem(${item.id})"><i class="fas fa-trash"></i></button></td></tr>
+`).join('');
+}
+function renderUsersTable() {
+const tbody = document.getElementById('usersTableBody');
+if (!tbody) return;
+tbody.innerHTML = store.users.map(user => `
+<tr><td>${user.id}</td><td>${user.name}</td><td>${user.email}</td><td>${user.role === 'admin' ? '<span class="admin-badge">ADMIN</span>' : 'User'}</td><td>${user.date}</td></tr>
+`).join('');
+}
+function openAddItemModal() {
+document.getElementById('itemForm').reset();
+document.getElementById('itemId').value = '';
+document.getElementById('itemModalTitle').innerHTML = t('addItem');
+new bootstrap.Modal(document.getElementById('itemModal')).show();
+}
+function editItem(id) {
+const item = store.menuItems.find(i => i.id === id);
+if (!item) return;
+document.getElementById('itemId').value = item.id;
+document.getElementById('itemName').value = item.name;
+document.getElementById('itemCategory').value = item.category;
+document.getElementById('itemPrice').value = item.price;
+document.getElementById('itemDescription').value = item.description || '';
+document.getElementById('itemImage').value = item.image || '';
+document.getElementById('itemModalTitle').innerHTML = t('itemUpdated');
+new bootstrap.Modal(document.getElementById('itemModal')).show();
+}
+function saveMenuItem() {
+const id = document.getElementById('itemId').value;
+const name = document.getElementById('itemName').value.trim();
+const category = document.getElementById('itemCategory').value;
+const price = parseInt(document.getElementById('itemPrice').value);
+const description = document.getElementById('itemDescription').value;
+const image = document.getElementById('itemImage').value || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400';
+if (!name || !price) { showToast(t('fillAllFields'), 'error'); return; }
+if (id) {
+const item = store.menuItems.find(i => i.id == id);
+if (item) { item.name = name; item.category = category; item.price = price; item.description = description; item.image = image; showToast(t('itemUpdated'), 'success'); }
+} else {
+store.menuItems.push({ id: Date.now(), name, category, price, description, image });
+showToast(t('itemAdded'), 'success');
+}
+localStorage.setItem('menuItems', JSON.stringify(store.menuItems));
+bootstrap.Modal.getInstance(document.getElementById('itemModal')).hide();
+renderMenuTable();
+renderMenu(document.querySelector('.filter-btn.active')?.dataset.filter || 'all');
+}
+function deleteItem(id) {
+if (!confirm(t('confirmDelete'))) return;
+store.menuItems = store.menuItems.filter(i => i.id !== id);
+localStorage.setItem('menuItems', JSON.stringify(store.menuItems));
+renderMenuTable();
+renderMenu(document.querySelector('.filter-btn.active')?.dataset.filter || 'all');
+showToast(t('itemDeleted'), 'info');
+}
+function saveSettings() { showToast(t('save') + ' сәтті!', 'success'); }
+// ===== Checkout =====
+function checkout() {
+if (store.cart.length === 0) { showToast(t('cartEmpty'), 'error'); return; }
+const subtotal = store.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+const delivery = 500;
+document.getElementById('checkoutSubtotal').textContent = subtotal.toLocaleString() + ' ₸';
+document.getElementById('checkoutDelivery').textContent = delivery.toLocaleString() + ' ₸';
+document.getElementById('checkoutTotal').textContent = (subtotal + delivery).toLocaleString() + ' ₸';
+closeCart();
+new bootstrap.Modal(document.getElementById('checkoutModal')).show();
+}
+function placeOrder() {
+const address = document.getElementById('deliveryAddress').value.trim();
+const phone = document.getElementById('deliveryPhone').value.trim();
+if (!address || !phone) { showToast(t('fillAllFields'), 'error'); return; }
+const subtotal = store.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+const delivery = 500;
+const order = {
+id: Date.now(),
+userId: store.user ? store.user.id : null,
+customer: store.user ? store.user.name : 'Қонақ',
+items: [...store.cart],
+total: subtotal + delivery,
+address, phone,
+status: 'new',
+date: new Date().toLocaleDateString('kk-KZ')
+};
+store.orders.push(order);
+localStorage.setItem('orders', JSON.stringify(store.orders));
+store.cart = [];
+saveCart();
+updateCartUI();
+bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
+showToast(t('orderPlaced'), 'success');
+document.getElementById('checkoutForm').reset();
+}
+// ===== Search =====
+function searchFood() {
+const query = document.getElementById('searchInput').value.toLowerCase().trim();
+if (!query) { renderMenu('all'); return; }
+const filtered = store.menuItems.filter(item => item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query));
+const grid = document.getElementById('menuGrid');
+if (filtered.length === 0) grid.innerHTML = '<div class="col-12 text-center py-5 text-muted"><i class="fas fa-search fa-3x mb-3"></i><h4>Ештеңе табылмады</h4></div>';
+else grid.innerHTML = filtered.map(item => `
+<div class="menu-card slide-up">
+<div class="card-img-wrapper"><img src="${item.image}" alt="${item.name}" loading="lazy">${item.popular ? '<span class="card-badge popular">' + t('popular') + '</span>' : ''}</div>
+<div class="card-body"><h5 class="card-title">${item.name}</h5><p class="card-text">${item.description}</p>
+<div class="card-footer"><span class="price">${item.price.toLocaleString()} ₸</span><button class="add-btn" onclick="addToCart(${item.id})"><i class="fas fa-plus"></i></button></div></div>
+</div>
+`).join('');
+document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+}
+// ===== Toast =====
+function showToast(message, type) {
+const container = document.getElementById('toastContainer');
+const toastId = 'toast-' + Date.now();
+const icons = { success: 'fa-check-circle text-success', error: 'fa-times-circle text-danger', info: 'fa-info-circle text-info' };
+container.insertAdjacentHTML('beforeend', `
+<div class="toast align-items-center" id="${toastId}" role="alert">
+<div class="d-flex"><div class="toast-body"><i class="fas ${icons[type]}"></i> ${message}</div>
+<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button></div>
+</div>
+`);
+const toast = new bootstrap.Toast(document.getElementById(toastId), { delay: 3000 });
+toast.show();
+document.getElementById(toastId).addEventListener('hidden.bs.toast', function() { this.remove(); });
+}
+// ===== Event Listeners =====
+function setupEventListeners() {
+document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
+document.getElementById('cartBtn')?.addEventListener('click', openCart);
+document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', function() {
+document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+this.classList.add('active');
+renderMenu(this.dataset.filter);
+}));
+document.getElementById('searchInput')?.addEventListener('keypress', function(e) { if (e.key === 'Enter') searchFood(); });
+document.querySelectorAll('a[href^="#"]').forEach(anchor => anchor.addEventListener('click', function(e) {
+const href = this.getAttribute('href');
+if (href !== '#') { e.preventDefault(); const target = document.querySelector(href); if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+}));
+}
+// ===== Scroll Effects =====
+function setupScrollEffects() {
+const navbar = document.getElementById('mainNavbar');
+window.addEventListener('scroll', function() {
+if (window.scrollY > 50) navbar.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
+else navbar.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+});
+const observer = new IntersectionObserver((entries) => entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('fade-in'); }), { threshold: 0.1 });
+document.querySelectorAll('.menu-card, .restaurant-card, .feature-card, .category-card').forEach(el => observer.observe(el));
+}
+// ===== Profile Placeholder =====
+function openProfileModal() { showToast('Профиль бөлімі жақында қосылады', 'info'); }
+</script>
+</body>
+</html>
